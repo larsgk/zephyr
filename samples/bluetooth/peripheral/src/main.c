@@ -185,14 +185,15 @@ static ssize_t write_without_rsp_vnd(struct bt_conn *conn,
 	return len;
 }
 
+#define READ_WRITE_ENCRYPT_SECURE (BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_READ_SECURE | BT_GATT_PERM_WRITE_ENCRYPT | BT_GATT_PERM_WRITE_SECURE)
+
 /* Vendor Primary Service Declaration */
 BT_GATT_SERVICE_DEFINE(vnd_svc,
 	BT_GATT_PRIMARY_SERVICE(&vnd_uuid),
 	BT_GATT_CHARACTERISTIC(&vnd_enc_uuid.uuid,
 			       BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE |
 			       BT_GATT_CHRC_INDICATE,
-			       BT_GATT_PERM_READ_ENCRYPT |
-			       BT_GATT_PERM_WRITE_ENCRYPT,
+			       READ_WRITE_ENCRYPT_SECURE,
 			       read_vnd, write_vnd, vnd_value),
 	BT_GATT_CCC(vnd_ccc_cfg_changed,
 		    BT_GATT_PERM_READ | BT_GATT_PERM_WRITE_ENCRYPT),
@@ -209,7 +210,7 @@ BT_GATT_SERVICE_DEFINE(vnd_svc,
 	BT_GATT_CEP(&vnd_long_cep),
 	BT_GATT_CHARACTERISTIC(&vnd_signed_uuid.uuid, BT_GATT_CHRC_READ |
 			       BT_GATT_CHRC_WRITE | BT_GATT_CHRC_AUTH,
-			       BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
+			       BT_GATT_PERM_READ | BT_GATT_PERM_READ_SECURE | BT_GATT_PERM_WRITE | BT_GATT_PERM_WRITE_SECURE,
 			       read_signed, write_signed, &signed_value),
 	BT_GATT_CHARACTERISTIC(&vnd_write_cmd_uuid.uuid,
 			       BT_GATT_CHRC_WRITE_WITHOUT_RESP,
@@ -361,7 +362,7 @@ void main(void)
 	bt_ready();
 
 	bt_gatt_cb_register(&gatt_callbacks);
-	bt_conn_auth_cb_register(&auth_cb_display);
+	// bt_conn_auth_cb_register(&auth_cb_display);
 
 	vnd_ind_attr = bt_gatt_find_by_uuid(vnd_svc.attrs, vnd_svc.attr_count,
 					    &vnd_enc_uuid.uuid);
