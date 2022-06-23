@@ -2173,7 +2173,7 @@ static int gatt_notify(struct bt_conn *conn, uint16_t handle,
 
 	/* Confirm that the connection has the correct level of security */
 	if (bt_gatt_check_perm(conn, params->attr,
-			       BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_READ_AUTHEN)) {
+			       BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_READ_AUTHEN | BT_GATT_PERM_READ_SECURE)) {
 		BT_WARN("Link is not encrypted");
 		return -EPERM;
 	}
@@ -2303,7 +2303,7 @@ static int gatt_indicate(struct bt_conn *conn, uint16_t handle,
 
 	/* Confirm that the connection has the correct level of security */
 	if (bt_gatt_check_perm(conn, params->attr,
-			       BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_READ_AUTHEN)) {
+			       BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_READ_AUTHEN | BT_GATT_PERM_READ_SECURE)) {
 		BT_WARN("Link is not encrypted");
 		return -EPERM;
 	}
@@ -2412,7 +2412,7 @@ static uint8_t notify_cb(const struct bt_gatt_attr *attr, uint16_t handle,
 
 		/* Confirm that the connection has the correct level of security */
 		if (bt_gatt_check_perm(conn, attr,
-				       BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_READ_AUTHEN)) {
+				       BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_READ_AUTHEN | BT_GATT_PERM_READ_SECURE)) {
 			BT_WARN("Link is not encrypted");
 			continue;
 		}
@@ -2640,18 +2640,20 @@ uint8_t bt_gatt_check_perm(struct bt_conn *conn, const struct bt_gatt_attr *attr
 		return 0;
 	}
 
-	if (attr->perm & BT_GATT_PERM_SECURE_MASK) {
-		printk("Secure connection required - checking\n");
+	mask &= attr->perm;
+
+	if (mask & BT_GATT_PERM_SECURE_MASK) {
+		BT_DBG("Secure connection required - checking. Flag: %x, Perm: %x, Mask: %x\n",
+														conn->le.keys->flags, attr->perm, mask);
 #if defined(CONFIG_BT_SMP)
 		if ((conn->le.keys->flags & BT_KEYS_SC) == 0) {
+			BT_DBG("Sending back BT_ATT_ERR_INSUFFICIENT_ENCRYPTION\n");
 			return BT_ATT_ERR_INSUFFICIENT_ENCRYPTION;
 		}
 #else
 		return BT_ATT_ERR_INSUFFICIENT_ENCRYPTION;
 #endif /* CONFIG_BT_SMP */
 	}
-
-	mask &= attr->perm;
 
 	if (mask & BT_GATT_PERM_AUTHEN_MASK) {
 		if (bt_conn_get_security(conn) < BT_SECURITY_L3) {
