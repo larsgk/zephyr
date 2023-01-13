@@ -103,7 +103,7 @@ static int mcux_tpm_set_cycles(const struct device *dev, uint32_t channel,
 				      pwm_freq, data->clock_freq);
 
 		if (status != kStatus_Success) {
-			LOG_ERR("Could not set up pwm");
+			LOG_ERR("Could not set up pwm, ERR=%d", status);
 			return -ENOTSUP;
 		}
 		TPM_StartTimer(config->base, config->tpm_clock_source);
@@ -162,7 +162,7 @@ static int mcux_tpm_init(const struct device *dev)
 		channel->chnlNumber = i;
 		channel->level = kTPM_NoPwmSignal;
 		channel->dutyCyclePercent = 0;
-		channel->firstEdgeDelayPercent = 0;
+		// channel->firstEdgeDelayPercent = 0;
 		channel++;
 	}
 

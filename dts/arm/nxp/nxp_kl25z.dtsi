@@ -6,6 +6,7 @@
 #include <zephyr/dt-bindings/clock/kinetis_mcg.h>
 #include <zephyr/dt-bindings/gpio/gpio.h>
 #include <zephyr/dt-bindings/i2c/i2c.h>
+#include <zephyr/dt-bindings/pwm/pwm.h>
 
 / {
 	chosen {
@@ -192,6 +193,36 @@
 			gpio-controller;
 			#gpio-cells = <2>;
 			nxp,kinetis-port = <&porte>;
+		};
+
+		tpm0: pwm@40038000 {
+			compatible = "nxp,kinetis-tpm";
+			reg = <0x40038000 0x88>;
+			interrupts = <0x84 0>;
+			/* channel information needed - fixme */
+			clocks = <&sim KINETIS_SIM_BUS_CLK 0x103C 24>;
+			status = "disabled";
+			#pwm-cells = <3>;
+		};
+
+		tpm1: pwm@40039000 {
+			compatible = "nxp,kinetis-tpm";
+			reg = <0x40039000 0x88>;
+			interrupts = <0x88 0>;
+			/* channel information needed - fixme */
+			clocks = <&sim KINETIS_SIM_BUS_CLK 0x103C 25>;
+			status = "disabled";
+			#pwm-cells = <3>;
+		};
+
+		tpm2: pwm@4003a000 {
+			compatible = "nxp,kinetis-tpm";
+			reg = <0x4003a000 0x88>;
+			interrupts = <0x8C 0>;
+			/* channel information needed - fixme */
+			clocks = <&sim KINETIS_SIM_BUS_CLK 0x103C 26>;
+			status = "disabled";
+			#pwm-cells = <3>;
 		};
 
 		usbotg: usbd@40072000 {

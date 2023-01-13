@@ -13,6 +13,7 @@
 #include <zephyr/arch/cpu.h>
 
 #define LPSCI0SRC_MCGFLLCLK	(1)
+#define TPMSRC_MCGPLLCLK	(1)
 
 #define CLOCK_NODEID(clk) \
 	DT_CHILD(DT_INST(0, nxp_kinetis_sim), clk)
@@ -77,6 +78,14 @@ static ALWAYS_INLINE void clock_init(void)
 	CLOCK_EnableUsbfs0Clock(kCLOCK_UsbSrcPll0,
 				DT_PROP(DT_PATH(cpus, cpu_0), clock_frequency));
 #endif
+
+#if defined(CONFIG_PWM) && \
+	(DT_NODE_HAS_STATUS(DT_NODELABEL(pwm0), okay) || \
+	 DT_NODE_HAS_STATUS(DT_NODELABEL(pwm1), okay) || \
+	 DT_NODE_HAS_STATUS(DT_NODELABEL(pwm2), okay))
+	CLOCK_SetTpmClock(TPMSRC_MCGPLLCLK);
+#endif
+
 }
 
 static int kl2x_init(const struct device *arg)

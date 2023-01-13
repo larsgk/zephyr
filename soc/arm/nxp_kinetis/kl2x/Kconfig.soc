@@ -15,6 +15,7 @@ config SOC_MKL25Z4
 	select HAS_MCUX_FTFX
 	select HAS_MCUX_LPSCI
 	select HAS_MCUX_SIM
+	select HAS_MCUX_TPM
 	select HAS_OSC
 	select HAS_MCG
 	select HAS_MCUX_RCM

@@ -36,4 +36,20 @@
 		};
 	};
 
+	tpm2_default: tpm2_default {
+		group0 {
+			pinmux = <TPM2_CH0_PTB18>,
+				<TPM2_CH1_PTB19>;
+			drive-strength = "low";
+			slew-rate = "fast";
+		};
+	};
+
+	tpm0_default: tpm0_default {
+		group0 {
+			pinmux = <TPM0_CH1_PTD1>;
+			drive-strength = "low";
+			slew-rate = "slow";
+		};
+	};
 };
